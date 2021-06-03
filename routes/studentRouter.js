@@ -46,4 +46,18 @@ router.route("/addNotification/:id").post((req, res) => {
 		.catch((err) => res.json({ failure: "Unable to find student", error: err }));
 });
 
+router.route("/update/:id").put((req, res) => {
+	Student.findById(req.params.id)
+		.then((student) => {
+			student.email = req.body.email;
+			student.branch = req.body.branch;
+			student.year = Number(req.body.year);
+			student
+				.save()
+				.then(() => res.json({ success: "Student updated successfully" }))
+				.catch((err) => res.json({ failure: "Unable to update student", error: err }));
+		})
+		.catch((err) => res.json({ failure: "Unable to find student", error: err }));
+});
+
 module.exports = router;

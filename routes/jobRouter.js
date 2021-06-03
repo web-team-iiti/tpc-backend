@@ -39,7 +39,7 @@ router.route("/add").post((req, res) => {
 		.catch((err) => res.json({ failure: "Unable to add job", error: err }));
 });
 
-router.route("/update/:id").post((req, res) => {
+router.route("/update/:id").put((req, res) => {
 	Job.findById(req.params.id)
 		.then((job) => {
 			job.companyName = req.body.companyName;
