@@ -34,6 +34,7 @@ const jobSchema = new Schema(
 			default: [],
 			required: true,
 		},
+		status: { type: Boolean, default: true, required: true }, // status ? "recruiting" : "not recruiting"
 	},
 	{
 		timestamps: true,
