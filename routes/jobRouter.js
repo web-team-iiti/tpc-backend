@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const Job = require("../models/job.model");
-const sendEmail = require("../services/mail");
+const { sendEmail } = require("../services/mail");
 
 router.route("/").get((req, res) => {
 	Job.find()
