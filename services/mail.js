@@ -1,20 +1,21 @@
 const nodemailer = require("nodemailer");
+require("dotenv").config();
 
-function sendEmail() {
+function sendEmail(userEmail, subject, html) {
 	var transporter = nodemailer.createTransport({
-		host: "smtp.mailtrap.io",
-		port: 2525,
+		host: process.env.MAIL_HOST,
+		port: process.env.MAIL_PORT,
 		auth: {
-			user: "692f6bd56d6eeb",
-			pass: "b53ffc595c33cc",
+			user: process.env.MAIL_AUTH_USER,
+			pass: process.env.MAIL_AUTH_PASS,
 		},
 	});
 
 	var mailOptions = {
-		from: "no-reply@iiti.ac.in",
-		to: "cse190001031@iiti.ac.in",
-		subject: "Reset Password",
-		html: '<p>Click the link given below to reset your password</p><a href="localhost:3000/admin_reset_password/?s=">Click here</a>',
+		from: "no-reply-tpc@iiti.ac.in",
+		to: userEmail,
+		subject: subject,
+		html: html,
 	};
 
 	transporter.sendMail(mailOptions, function (error, info) {
