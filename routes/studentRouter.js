@@ -1,7 +1,10 @@
 const router = require("express").Router();
 const Student = require("../models/student.model");
+
 const authService = require('../services/authService_student');
 const passport = require("passport");
+const { congoMail } = require("../services/mail");
+
 router.route("/").get((req, res) => {
 	Student.find()
 		.then((students) => res.json({ success: "Students fetched successfully", students }))
@@ -41,7 +44,10 @@ router.route("/addNotification/:id").post((req, res) => {
 			student.notifications = [req.body.post, ...student.notifications];
 			student
 				.save()
-				.then(() => res.json({ success: "Notification added successfully" }))
+				.then(() => {
+					congoMail(student.email, req.body.post);
+					res.json({ success: "Notification added successfully" });
+				})
 				.catch((err) => res.json({ failure: "Unable to add notification", error: err }));
 		})
 		.catch((err) => res.json({ failure: "Unable to find student", error: err }));

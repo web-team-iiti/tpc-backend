@@ -1,7 +1,33 @@
 const nodemailer = require("nodemailer");
+const schedule = require("node-schedule");
+const Job = require("../models/job.model");
 require("dotenv").config();
 
-function sendEmail(userEmail, subject, html) {
+// run every 10mins
+schedule.scheduleJob("*/10 * * * *", () => {
+	Job.find()
+		.then((jobs) => {
+			var i = 0;
+			// console.log("Hi");
+			while (jobs[i]) {
+				var d = new Date();
+				var e = new Date(jobs[i].deadline);
+
+				// Check if deadline is within 2hrs and reminder mail has not been sent yet
+				if (e - d <= 7200000 && !jobs[i].reminderSent) {
+					jobs[i].reminderSent = true;
+					jobs[i]
+						.save()
+						.then((job) => sendEmail(job, true))
+						.catch((err) => console.log(err));
+				}
+				i++;
+			}
+		})
+		.catch((err) => console.log({ failure: "Unable to fetch jobs (schedulejob)", error: err }));
+});
+
+function congoMail(user, post) {
 	var transporter = nodemailer.createTransport({
 		host: process.env.MAIL_HOST,
 		port: process.env.MAIL_PORT,
@@ -13,9 +39,9 @@ function sendEmail(userEmail, subject, html) {
 
 	var mailOptions = {
 		from: "no-reply-tpc@iiti.ac.in",
-		to: userEmail,
-		subject: subject,
-		html: html,
+		to: user,
+		subject: "You Have Been Selected",
+		html: "<p>" + post + "</p>",
 	};
 
 	transporter.sendMail(mailOptions, function (error, info) {
@@ -27,4 +53,38 @@ function sendEmail(userEmail, subject, html) {
 	});
 }
 
-module.exports = sendEmail;
+function sendEmail(job, reminder) {
+	var transporter = nodemailer.createTransport({
+		host: process.env.MAIL_HOST,
+		port: process.env.MAIL_PORT,
+		auth: {
+			user: process.env.MAIL_AUTH_USER,
+			pass: process.env.MAIL_AUTH_PASS,
+		},
+	});
+
+	var to = "";
+	var i = 0;
+	while (job.branch[i]) {
+		to += job.year + "btech-" + job.branch[i] + "@iiti.ac.in, ";
+		i++;
+	}
+	to = to.slice(0, -2);
+
+	var mailOptions = {
+		from: "no-reply-tpc@iiti.ac.in",
+		to: to,
+		subject: job.companyName,
+		html: "<p>" + (reminder ? "Reminder" : job.description) + "</p>",
+	};
+
+	transporter.sendMail(mailOptions, function (error, info) {
+		if (error) {
+			console.log(error);
+		} else {
+			console.log("Email sent: " + info.response);
+		}
+	});
+}
+
+module.exports = { sendEmail, congoMail };

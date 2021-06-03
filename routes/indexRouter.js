@@ -1,5 +1,4 @@
 const sendEmail = require("../services/mail");
-
 const router = require("express").Router();
 
 router.route("/").get((req, res) => {

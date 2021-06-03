@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Job = require("../models/job.model");
+const { sendEmail } = require("../services/mail");
 
 router.route("/").get((req, res) => {
 	Job.find()
@@ -24,18 +25,23 @@ router.route("/add").post((req, res) => {
 				twitter: req.body.twitter,
 			},
 		},
-		deadline: Date(req.body.deadline),
+		deadline: req.body.deadline,
 		branch: req.body.branch,
 		year: Number(req.body.year),
 		timeline: [],
 		status: true,
+		reminderSent: false,
 	};
+	console.log(req.body.deadline);
 
 	const newJob = new Job(data);
 
 	newJob
 		.save()
-		.then(() => res.json({ success: "Job added successfully" }))
+		.then(() => {
+			sendEmail(newJob, false);
+			res.json({ success: "Job added successfully" });
+		})
 		.catch((err) => res.json({ failure: "Unable to add job", error: err }));
 });
 
