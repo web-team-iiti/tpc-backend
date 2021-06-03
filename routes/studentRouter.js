@@ -1,5 +1,8 @@
 const router = require("express").Router();
 const Student = require("../models/student.model");
+
+const authService = require('../services/authService_student');
+const passport = require("passport");
 const { congoMail } = require("../services/mail");
 
 router.route("/").get((req, res) => {
@@ -63,5 +66,10 @@ router.route("/update/:id").put((req, res) => {
 		})
 		.catch((err) => res.json({ failure: "Unable to find student", error: err }));
 });
-
+router.post('/login/student', authService.checkOAUTHtoken, passport.authenticate('custom', {
+	failureRedirect: '/login/failure',
+	session: false,
+}), (req, res) => {
+	authService.loginuser(req, res);
+})
 module.exports = router;
