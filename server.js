@@ -1,9 +1,13 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const passport = require("passport");
+const bodyParser = require("body-parser");
+
 const indexRouter = require("./routes/indexRouter");
 const jobRouter = require("./routes/jobRouter");
 const studentRouter = require("./routes/studentRouter");
+require("./config/passport-google")(passport);
 
 require("dotenv").config();
 
@@ -19,6 +23,7 @@ const connection = mongoose.connection;
 connection.once("open", () => {
 	console.log("MongoDB connection established successfully");
 });
+app.use(passport.initialize());
 
 app.use("/", indexRouter);
 app.use("/job", jobRouter);
