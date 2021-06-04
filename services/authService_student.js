@@ -75,6 +75,7 @@ exports.loginuser = (req, res, next) => {
         var token = getToken({
             userId: req.user._id
         });
+        console.log("user is",req.user,token)
         res.statusCode = 200;
         console.log(token);
         res.setHeader('Content-Type', 'application/json');

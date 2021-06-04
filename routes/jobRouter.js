@@ -1,12 +1,29 @@
 const router = require("express").Router();
 const Job = require("../models/job.model");
 const { sendEmail } = require("../services/mail");
-
+const ensureAuthenticated=require("../services/checkers")
 router.route("/").get((req, res) => {
 	Job.find()
 		.then((jobs) => res.json({ success: "Jobs fetched successfully", jobs }))
 		.catch((err) => res.json({ failure: "Unable to fetch jobs", error: err }));
 });
+
+
+router.route("/student/:id").get(ensureAuthenticated,async(req,res) => {
+	try{
+		let jobs=await Job.find({branch:req.user.branch,year:req.user.year})
+
+		res.json({
+			jobs:jobs
+		})
+
+	}
+	catch(e){
+		res.json({error:e})
+	}
+});
+
+
 
 router.route("/add").post((req, res) => {
 	const data = {
