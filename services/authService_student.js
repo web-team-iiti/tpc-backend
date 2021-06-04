@@ -70,11 +70,13 @@ getToken = function(user) {
     });
 };
 exports.loginuser = (req, res, next) => {
+    console.log("login user called")
     if (req.user) {
         var token = getToken({
             userId: req.user._id
         });
         res.statusCode = 200;
+        console.log(token);
         res.setHeader('Content-Type', 'application/json');
         res.json({
             success: true,

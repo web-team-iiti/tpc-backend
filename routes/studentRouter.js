@@ -71,7 +71,7 @@ router.post('/login', authService.checkOAUTHtoken, passport.authenticate('custom
 	failureRedirect: '/login/failure',
 	session: false,
 }), (req, res) => {
-	console.log("login called");
+	console.log("login called", req.user);
 	authService.loginuser(req, res);
 });
 
