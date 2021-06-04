@@ -28,12 +28,13 @@ exports.checkOAUTHtoken = async(req, res, next) => {
                 });
                 const payload = await ticket.getPayload();
                 const userid = payload['sub'];
-                console.log(payload);
+                console.log("called",payload);
                 // If request specified a G Suite domain:
                 // const domain = payload['hd'];
                 return payload;
             }
             await verify().then((payload) => {
+                console.log("verified")
                 if (payload['hd'] !== 'iiti.ac.in') {
                     return res.sendStatus(401);
                 }
@@ -71,10 +72,8 @@ getToken = function(user) {
 exports.loginuser = (req, res, next) => {
     if (req.user) {
         var token = getToken({
-            userId: req.user._id,
-            role: 'User',
+            userId: req.user._id
         });
-        console.log(req.user);
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         res.json({
@@ -83,6 +82,9 @@ exports.loginuser = (req, res, next) => {
             status: 'You are successfully logged in!',
             user: req.user
         });
+    }
+    else{
+        console.log("user not found");
     }
 }
 // exports.signToken = (req, res) => {

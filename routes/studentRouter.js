@@ -13,6 +13,7 @@ router.route("/").get((req, res) => {
 
 router.route("/addOne").post((req, res) => {
 	const data = {
+		name: req.body.name,
 		email: req.body.email,
 		branch: req.body.branch,
 		year: Number(req.body.year),
@@ -66,10 +67,22 @@ router.route("/update/:id").put((req, res) => {
 		})
 		.catch((err) => res.json({ failure: "Unable to find student", error: err }));
 });
-router.post('/login/student', authService.checkOAUTHtoken, passport.authenticate('custom', {
+router.post('/login', authService.checkOAUTHtoken, passport.authenticate('custom', {
 	failureRedirect: '/login/failure',
 	session: false,
 }), (req, res) => {
+	console.log("login called");
 	authService.loginuser(req, res);
-})
+});
+
+router.post('/google', passport.authenticate('google-token',{failureRedirect: 'google/failure', session: false}),(req, res)=>{
+	authService.loginuser(req, res);
+});
+
+router.get('/google/failure',(req, res)=>{
+res.status(401).json({message: "failed"})
+});
+
+
+
 module.exports = router;
