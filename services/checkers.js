@@ -46,7 +46,7 @@ async function ensureAdminHelp(req,res,next){
 }
 
 async function ensureAdmin(req,res,next){
-    return ensureAuthenticated(req,res,function(req,res,next){
+    return ensureAuthenticated(req,res,function(){
         return ensureAdminHelp(req,res,next);
     })
 }

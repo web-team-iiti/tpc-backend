@@ -3,15 +3,6 @@ const Job = require("../models/job.model");
 const { sendEmail } = require("../services/mail");
 const {ensureAuthenticated, ensureAdmin} = require("../services/checkers")
 
-router.use(ensureAdmin)
-
-router.route("/").get((req, res) => {
-	Job.find()
-		.then((jobs) => res.json({ success: "Jobs fetched successfully", jobs }))
-		.catch((err) => res.json({ failure: "Unable to fetch jobs", error: err }));
-});
-
-
 router.route("/myjob").get(ensureAuthenticated ,async(req,res) => {
 	try{
 		console.log(req.user);
@@ -25,6 +16,16 @@ router.route("/myjob").get(ensureAuthenticated ,async(req,res) => {
 		res.json({error:e})
 	}
 });
+router.use(ensureAdmin)
+
+router.route("/").get((req, res) => {
+	Job.find()
+		.then((jobs) => res.json({ success: "Jobs fetched successfully", jobs }))
+		.catch((err) => res.json({ failure: "Unable to fetch jobs", error: err }));
+});
+
+
+
 
 
 
