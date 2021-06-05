@@ -14,7 +14,7 @@ router.post('/login', authService.checkOAUTHtoken, passport.authenticate('custom
 	authService.loginuser(req, res);
 });
 
-router.use(ensureAdmin)
+// router.use(ensureAdmin)
 
 router.route("/").get((req, res) => {
 	Student.find()

@@ -51,8 +51,45 @@ async function ensureAdmin(req,res,next){
     })
 }
 
-async function runensureAdmin(req,res,next){
+async function ensureAdminAuth(req,res,next){
+        // if (req.isAuthenticated()) {
+        //     return next();
+        // }
+        // res.status(401).json({
+        //     error: 'Unauthorized'
+        // })
+        console.log("Admin Auth")
+        const token = req.header('x-auth-token');
+        if (!token||token===null) return res.status(401).send('Access denied. No token provided')
+        try {
+            const payload = jwt.verify(token, process.env.JWT_SECRET);
+                let workingUser = await Student.findOne({
+                    _id: payload.userId
+                })
+                if (workingUser) {
+                    let adminUser = await adminList.findOne({email: workingUser.email})
+                    if(adminUser){
+                        req.user = adminUser;
+                        return next();
+                    }
+                    else {
+                        return res.status(400).json({
+                            error: 'Not an Admin'
+                        })
+                    }
 
+                } else {
+                    return res.status(400).json({
+                        error: 'No user found'
+                    })
+                }
+        } catch (e) {
+            console.log("hello",e);
+            return res.status(400).json({
+                error: e,
+            })
+        }
+    
 }
 
 
@@ -62,5 +99,5 @@ async function runensureAdmin(req,res,next){
 
 
 module.exports = {
-    ensureAuthenticated,ensureAdmin
+    ensureAuthenticated,ensureAdmin, ensureAdminAuth
 }
