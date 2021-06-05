@@ -10,6 +10,7 @@ async function ensureAuthenticated(req, res, next) {
     // })
     console.log("C")
     const token = req.header('x-auth-token');
+    console.log(token);
     if (!token||token===null) return res.status(401).send('Access denied. No token provided')
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET);
@@ -46,7 +47,7 @@ async function ensureAdminHelp(req,res,next){
 }
 
 async function ensureAdmin(req,res,next){
-    return ensureAuthenticated(req,res,function(req,res,next){
+    return ensureAuthenticated(req,res,function(){
         return ensureAdminHelp(req,res,next);
     })
 }

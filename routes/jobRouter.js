@@ -1,44 +1,34 @@
 const router = require("express").Router();
 const Job = require("../models/job.model");
 const { sendEmail } = require("../services/mail");
-const {ensureAuthenticated, ensureAdminAuth} = require("../services/checkers")
+const { ensureAuthenticated, ensureAdmin } = require("../services/checkers");
 
-router.route("/myjob").get(ensureAuthenticated ,async(req,res) => {
-	try{
-		console.log(req.user);
-		let jobs=await Job.find({branch:req.user.branch, year:req.user.year})
-		console.log(jobs)
-		res.json({
-			jobs:jobs
-		})
-	}
-	catch(e){
-		res.json({error:e})
-	}
-});
-
-
-router.route("/").get(ensureAdminAuth, async (req, res) => {
+router.route("/myjob").get(ensureAuthenticated, async (req, res) => {
 	try {
-		let jobs=await Job.find()
-		res.json({ success: "Jobs fetched successfully", jobs: jobs })
-	} catch (error) {
-		res.json({ failure: "Unable to fetch jobs", error: error })
+		console.log(req.user);
+		let jobs = await Job.find({ branch: req.user.branch, year: req.user.year });
+		console.log(jobs);
+		res.json({
+			jobs: jobs,
+		});
+	} catch (e) {
+		res.json({ error: e });
 	}
-	// Job.find()
-	// 	.then((jobs) => res.json({ success: "Jobs fetched successfully", jobs }))
-	// 	.catch((err) => res.json({ failure: "Unable to fetch jobs", error: err }));
 });
+router.use(ensureAdmin);
 
-
-
-
-
+router.route("/").get((req, res) => {
+	console.log("all jobs");
+	Job.find()
+		.then((jobs) => res.json({ success: "Jobs fetched successfully", jobs: jobs }))
+		.catch((err) => res.json({ failure: "Unable to fetch jobs", error: err }));
+});
 
 router.route("/add").post((req, res) => {
 	const data = {
 		companyName: req.body.companyName,
 		description: req.body.description,
+		jobTitle: req.body.jobTitle,
 		documentLinks: req.body.documentLinks || [],
 		gFormLink: req.body.gFormLink,
 		contact: {
@@ -77,6 +67,7 @@ router.route("/update/:id").put((req, res) => {
 		.then((job) => {
 			job.companyName = req.body.companyName;
 			job.description = req.body.description;
+			job.jobTitle = req.body.jobTitle;
 			job.documentLinks = req.body.documentLinks || [];
 			job.gFormLink = req.body.gFormLink;
 			job.contact = {
@@ -90,7 +81,7 @@ router.route("/update/:id").put((req, res) => {
 					twitter: req.body.twitter,
 				},
 			};
-			job.deadline = Date(req.body.deadline);
+			job.deadline = req.body.deadline;
 			job.branch = req.body.branch;
 			job.year = Number(req.body.year);
 			job.timeline = [];
