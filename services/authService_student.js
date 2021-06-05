@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const {
     OAuth2Client
 } = require('google-auth-library');
+const adminList = require('../models/adminList');
+const { count } = require('../models/adminList');
 
 
 // check if Token exists on request Header and attach token to request as attribute
@@ -33,7 +35,7 @@ exports.checkOAUTHtoken = async(req, res, next) => {
                 // const domain = payload['hd'];
                 return payload;
             }
-            await verify().then((payload) => {
+            await verify().then(async(payload) => {
                 console.log("verified")
                 if (payload['hd'] !== 'iiti.ac.in') {
                     return res.sendStatus(401);
@@ -41,6 +43,14 @@ exports.checkOAUTHtoken = async(req, res, next) => {
                 //verified
                 else {
                     req.body.email=payload['email'];
+                    req.body.isAdmin=false;
+
+                    let admin=await adminList.findOne({email:payload['email']})
+                    if(admin!=null){
+                        res.locals.isAdmin=true;
+                        console.log("Adming found");
+                    }
+                    console.log(payload['email']);
                     return next()
                 };
             }).catch(err => {
@@ -75,15 +85,19 @@ exports.loginuser = (req, res, next) => {
         var token = getToken({
             userId: req.user._id
         });
+        
         console.log("user is",req.user,token)
         res.statusCode = 200;
         console.log(token);
+        let isAdmin=res.locals.isAdmin;
         res.setHeader('Content-Type', 'application/json');
+        
         res.json({
             success: true,
             token: token,
-            status: 'You are successfully logged in!',
-            user: req.user
+            status: 'You are successfully logged in!!',
+            user: req.user,
+            isAdmin:isAdmin
         });
     }
     else{

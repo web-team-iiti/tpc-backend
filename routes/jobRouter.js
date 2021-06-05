@@ -1,7 +1,10 @@
 const router = require("express").Router();
 const Job = require("../models/job.model");
 const { sendEmail } = require("../services/mail");
-const {ensureAuthenticated} = require("../services/checkers")
+const {ensureAuthenticated, ensureAdmin} = require("../services/checkers")
+
+router.use(ensureAdmin)
+
 router.route("/").get((req, res) => {
 	Job.find()
 		.then((jobs) => res.json({ success: "Jobs fetched successfully", jobs }))

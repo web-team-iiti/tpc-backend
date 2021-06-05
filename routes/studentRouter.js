@@ -4,6 +4,17 @@ const Student = require("../models/student.model");
 const authService = require('../services/authService_student');
 const passport = require("passport");
 const { congoMail } = require("../services/mail");
+const { ensureAdmin } = require("../services/checkers");
+
+router.post('/login', authService.checkOAUTHtoken, passport.authenticate('custom', {
+	failureRedirect: '/login/failure',
+	session: false,
+}), (req, res) => {
+	console.log("login called", req.user);
+	authService.loginuser(req, res);
+});
+
+router.use(ensureAdmin)
 
 router.route("/").get((req, res) => {
 	Student.find()
@@ -67,13 +78,7 @@ router.route("/update/:id").put((req, res) => {
 		})
 		.catch((err) => res.json({ failure: "Unable to find student", error: err }));
 });
-router.post('/login', authService.checkOAUTHtoken, passport.authenticate('custom', {
-	failureRedirect: '/login/failure',
-	session: false,
-}), (req, res) => {
-	console.log("login called", req.user);
-	authService.loginuser(req, res);
-});
+
 
 router.post('/google', passport.authenticate('google-token',{failureRedirect: 'google/failure', session: false}),(req, res)=>{
 	authService.loginuser(req, res);

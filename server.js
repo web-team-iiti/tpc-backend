@@ -3,6 +3,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const passport = require("passport");
 const bodyParser = require("body-parser");
+const app = express();
 
 const indexRouter = require("./routes/indexRouter");
 const jobRouter = require("./routes/jobRouter");
@@ -11,7 +12,6 @@ require("./config/passport-google")(passport);
 
 require("dotenv").config();
 
-const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(cors());

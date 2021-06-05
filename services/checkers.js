@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const adminList = require('../models/adminList');
 const Student = require('../models/student.model');
 async function ensureAuthenticated(req, res, next) {
     // if (req.isAuthenticated()) {
@@ -7,8 +8,9 @@ async function ensureAuthenticated(req, res, next) {
     // res.status(401).json({
     //     error: 'Unauthorized'
     // })
+    console.log("C")
     const token = req.header('x-auth-token');
-    if (!token) res.status(401).send('Access denied. No token provided')
+    if (!token||token===null) return res.status(401).send('Access denied. No token provided')
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET);
             let workingUser = await Student.findOne({
@@ -16,7 +18,7 @@ async function ensureAuthenticated(req, res, next) {
             })
             if (workingUser) {
                 req.user = workingUser
-                next();
+                return next();
             } else {
                 return res.status(400).json({
                     error: 'No user found'
@@ -24,12 +26,41 @@ async function ensureAuthenticated(req, res, next) {
             }
     } catch (e) {
         console.log("hello",e);
-        res.status(400).json({
+        return res.status(400).json({
             error: e,
         })
     }
 
 }
+async function ensureAdminHelp(req,res,next){
+    console.log("D")
+    let admin=await adminList.findOne({email:req.user.email});
+    
+    if(admin!=null){
+        return next();
+    }
+    return res.status(403).json({
+        error:"Access denied"
+    })
+
+}
+
+async function ensureAdmin(req,res,next){
+    return ensureAuthenticated(req,res,function(req,res,next){
+        return ensureAdminHelp(req,res,next);
+    })
+}
+
+async function runensureAdmin(req,res,next){
+
+}
+
+
+
+
+
+
+
 module.exports = {
-    ensureAuthenticated
+    ensureAuthenticated,ensureAdmin
 }
