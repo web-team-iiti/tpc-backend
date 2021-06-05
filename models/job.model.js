@@ -4,7 +4,17 @@ const jobSchema = new Schema(
 	{
 		companyName: { type: String, required: true },
 		description: { type: String, required: true },
-		documentLinks: { type: [String], required: true, default: [] },
+		jobTitle: { type: String, required: true },
+		documentLinks: {
+			type: [
+				{
+					name: { type: String, required: true },
+					link: { type: String, required: true },
+				},
+			],
+			required: true,
+			default: [],
+		},
 		gFormLink: { type: String, required: true },
 		contact: {
 			type: {
