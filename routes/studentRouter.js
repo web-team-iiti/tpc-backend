@@ -44,7 +44,8 @@ router.route("/addOne").post((req, res) => {
 });
 
 router.route("/addMany").post((req, res) => {
-	Student.insertMany(req.body.data)
+	console.log(req.body);
+	Student.insertMany(req.body)
 		.then(() => res.json({ success: "Students added successfully" }))
 		.catch((err) => res.json({ failure: "Unable to add students", error: err }));
 });
