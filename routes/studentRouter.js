@@ -23,7 +23,9 @@ router.use(ensureAdmin);
 
 router.route("/").get((req, res) => {
 	Student.find()
-		.then((students) => res.json({ success: "Students fetched successfully", students }))
+		.then((students) => {
+			res.json({ success: "Students fetched successfully", students: students });
+		})
 		.catch((err) => res.json({ failure: "Unable to fetch students", error: err }));
 });
 
@@ -96,6 +98,12 @@ router.route("/update/:id").put((req, res) => {
 				.catch((err) => res.json({ failure: "Unable to update student", error: err }));
 		})
 		.catch((err) => res.json({ failure: "Unable to find student", error: err }));
+});
+
+router.route("/delete/:id").delete((req, res) => {
+	Student.deleteOne({ _id: id })
+		.then(() => res.json({ success: "Student removed successfully" }))
+		.catch((err) => res.json({ failure: "Unable to remove student", error: err }));
 });
 
 router.post(
