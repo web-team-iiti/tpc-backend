@@ -27,6 +27,46 @@ schedule.scheduleJob("*/10 * * * *", () => {
 		.catch((err) => console.log({ failure: "Unable to fetch jobs (schedulejob)", error: err }));
 });
 
+function notificationMail(branch, year, post) {
+	var transporter = nodemailer.createTransport({
+		host: process.env.MAIL_HOST,
+		port: process.env.MAIL_PORT,
+		auth: {
+			user: process.env.MAIL_AUTH_USER,
+			pass: process.env.MAIL_AUTH_PASS,
+		},
+	});
+
+	var to = "";
+	var i = 0;
+	var j = 0;
+
+	while (branch[i]) {
+		while (year[j]) {
+			to += year[j] + "btech-" + branch[i] + "@iiti.ac.in, ";
+			j++;
+		}
+		i++;
+	}
+
+	to = to.slice(0, -2);
+
+	var mailOptions = {
+		from: "no-reply-tpc@iiti.ac.in",
+		to: to,
+		subject: "Notification",
+		html: "<p>" + post + "</p>",
+	};
+
+	transporter.sendMail(mailOptions, function (error, info) {
+		if (error) {
+			console.log(error);
+		} else {
+			console.log("Email sent: " + info.response);
+		}
+	});
+}
+
 function congoMail(user, post) {
 	var transporter = nodemailer.createTransport({
 		host: process.env.MAIL_HOST,
@@ -87,4 +127,4 @@ function sendEmail(job, reminder) {
 	});
 }
 
-module.exports = { sendEmail, congoMail };
+module.exports = { sendEmail, congoMail, notificationMail };

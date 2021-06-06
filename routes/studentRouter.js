@@ -1,22 +1,25 @@
 const router = require("express").Router();
 const Student = require("../models/student.model");
 
-const authService = require('../services/authService_student');
+const authService = require("../services/authService_student");
 const passport = require("passport");
-const { congoMail } = require("../services/mail");
+const { congoMail, notificationMail } = require("../services/mail");
 const { ensureAdmin } = require("../services/checkers");
 
-router.post('/login', authService.checkOAUTHtoken, passport.authenticate('custom', {
-	failureRedirect: '/login/failure',
-	session: false,
-}), (req, res) => {
-	console.log("login called", req.user);
-	authService.loginuser(req, res);
-});
+router.post(
+	"/login",
+	authService.checkOAUTHtoken,
+	passport.authenticate("custom", {
+		failureRedirect: "/login/failure",
+		session: false,
+	}),
+	(req, res) => {
+		console.log("login called", req.user);
+		authService.loginuser(req, res);
+	}
+);
 
-
-
-router.use(ensureAdmin)
+router.use(ensureAdmin);
 
 router.route("/").get((req, res) => {
 	Student.find()
@@ -67,6 +70,20 @@ router.route("/addNotification/:id").post((req, res) => {
 		.catch((err) => res.json({ failure: "Unable to find student", error: err }));
 });
 
+router.route("/addNotificationMultiple").post((req, res) => {
+	console.log(req.body);
+	Student.updateMany(
+		{ branch: req.body.branch, year: req.body.year },
+		{ $push: { notifications: { text: req.body.message } } }
+	)
+		.then(() => {
+			// console.log(students);
+			notificationMail(req.body.branch, req.body.year, req.body.message);
+			res.json("Hi");
+		})
+		.catch((err) => res.json({ failure: "Unable to find student", error: err }));
+});
+
 router.route("/update/:id").put((req, res) => {
 	Student.findById(req.params.id)
 		.then((student) => {
@@ -81,15 +98,16 @@ router.route("/update/:id").put((req, res) => {
 		.catch((err) => res.json({ failure: "Unable to find student", error: err }));
 });
 
+router.post(
+	"/google",
+	passport.authenticate("google-token", { failureRedirect: "google/failure", session: false }),
+	(req, res) => {
+		authService.loginuser(req, res);
+	}
+);
 
-router.post('/google', passport.authenticate('google-token',{failureRedirect: 'google/failure', session: false}),(req, res)=>{
-	authService.loginuser(req, res);
+router.get("/google/failure", (req, res) => {
+	res.status(401).json({ message: "failed" });
 });
-
-router.get('/google/failure',(req, res)=>{
-res.status(401).json({message: "failed"})
-});
-
-
 
 module.exports = router;

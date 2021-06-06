@@ -15,6 +15,7 @@ router.route("/myjob").get(ensureAuthenticated, async (req, res) => {
 		res.json({ error: e });
 	}
 });
+
 router.use(ensureAdmin);
 
 router.route("/").get((req, res) => {
