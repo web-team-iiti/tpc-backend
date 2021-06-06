@@ -3,7 +3,7 @@ const Student = require("../models/student.model");
 
 const authService = require("../services/authService_student");
 const passport = require("passport");
-const { congoMail, notificationMail } = require("../services/mail");
+const { notificationArrayEmail, notificationMail } = require("../services/mail");
 const { ensureAdmin } = require("../services/checkers");
 
 router.post(
@@ -55,22 +55,17 @@ router.route("/deleteAll").delete((req, res) => {
 		.catch((err) => res.json({ failure: "Unable to delete all students' data", error: err }));
 });
 
-router.route("/addNotification/:id").post((req, res) => {
-	Student.findById(req.params.id)
-		.then((student) => {
-			student.notifications = [req.body.post, ...student.notifications];
-			student
-				.save()
-				.then(() => {
-					congoMail(student.email, req.body.post);
-					res.json({ success: "Notification added successfully" });
-				})
-				.catch((err) => res.json({ failure: "Unable to add notification", error: err }));
+router.route("/addNotificationArray").post((req, res) => {
+	console.log(req.body);
+	Student.updateMany({ email: req.body.emails }, { $push: { notifications: { text: req.body.text } } })
+		.then(() => {
+			notificationArrayEmail(req.body.emails, req.body.subject, req.body.text);
+			res.json("Hi");
 		})
 		.catch((err) => res.json({ failure: "Unable to find student", error: err }));
 });
 
-router.route("/addNotificationMultiple").post((req, res) => {
+router.route("/addNotificationBranch").post((req, res) => {
 	console.log(req.body);
 	Student.updateMany(
 		{ branch: req.body.branch, year: req.body.year },
