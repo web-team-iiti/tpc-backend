@@ -67,7 +67,7 @@ function notificationMail(branch, year, post) {
 	});
 }
 
-function congoMail(user, post) {
+function notificationArrayEmail(users, subject, text) {
 	var transporter = nodemailer.createTransport({
 		host: process.env.MAIL_HOST,
 		port: process.env.MAIL_PORT,
@@ -77,11 +77,22 @@ function congoMail(user, post) {
 		},
 	});
 
+	to = "";
+
+	var i = 0;
+
+	while (users[i]) {
+		to += users[i] + ", ";
+		i++;
+	}
+
+	to.slice(0, -2);
+
 	var mailOptions = {
 		from: "no-reply-tpc@iiti.ac.in",
-		to: user,
-		subject: "You Have Been Selected",
-		html: "<p>" + post + "</p>",
+		to: to,
+		subject: subject,
+		html: "<p>" + text + "</p>",
 	};
 
 	transporter.sendMail(mailOptions, function (error, info) {
@@ -127,4 +138,4 @@ function sendEmail(job, reminder) {
 	});
 }
 
-module.exports = { sendEmail, congoMail, notificationMail };
+module.exports = { sendEmail, notificationArrayEmail, notificationMail };
