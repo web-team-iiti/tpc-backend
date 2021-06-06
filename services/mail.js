@@ -27,7 +27,7 @@ schedule.scheduleJob("*/10 * * * *", () => {
 		.catch((err) => console.log({ failure: "Unable to fetch jobs (schedulejob)", error: err }));
 });
 
-function notificationMail(branch, year, post) {
+function notificationMail(branch, year, subject, post) {
 	var transporter = nodemailer.createTransport({
 		host: process.env.MAIL_HOST,
 		port: process.env.MAIL_PORT,
@@ -54,7 +54,7 @@ function notificationMail(branch, year, post) {
 	var mailOptions = {
 		from: "no-reply-tpc@iiti.ac.in",
 		to: to,
-		subject: "Notification",
+		subject: subject,
 		html: "<p>" + post + "</p>",
 	};
 

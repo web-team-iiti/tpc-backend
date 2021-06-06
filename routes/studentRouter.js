@@ -76,7 +76,7 @@ router.route("/addNotificationBranch").post((req, res) => {
 	)
 		.then(() => {
 			// console.log(students);
-			notificationMail(req.body.branch, req.body.year, req.body.message);
+			notificationMail(req.body.branch, req.body.year,req.body.subject, req.body.message);
 			res.json("Hi");
 		})
 		.catch((err) => res.json({ failure: "Unable to find student", error: err }));
