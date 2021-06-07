@@ -96,7 +96,7 @@ router.route("/update/:id").put((req, res) => {
 });
 
 router.route("/delete/:id").delete((req, res) => {
-	Job.deleteOne({ _id: id })
+	Job.deleteOne({ _id: req.params.id })
 		.then(() => res.json({ success: "Job removed successfully" }))
 		.catch((err) => res.json({ failure: "Unable to remove job", error: err }));
 });

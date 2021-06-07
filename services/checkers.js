@@ -28,7 +28,7 @@ async function ensureAuthenticated(req, res, next) {
     } catch (e) {
         console.log("hello",e);
         return res.status(400).json({
-            error: e,
+            error: e
         })
     }
 

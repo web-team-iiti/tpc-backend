@@ -72,11 +72,11 @@ router.route("/addNotificationBranch").post((req, res) => {
 	console.log(req.body);
 	Student.updateMany(
 		{ branch: req.body.branch, year: req.body.year },
-		{ $push: { notifications: { text: req.body.message } } }
+		{ $push: { notifications: { text: req.body.text } } }
 	)
 		.then(() => {
 			// console.log(students);
-			notificationMail(req.body.branch, req.body.year,req.body.subject, req.body.message);
+			notificationMail(req.body.branch, req.body.year,req.body.subject, req.body.text);
 			res.json("Hi");
 		})
 		.catch((err) => res.json({ failure: "Unable to find student", error: err }));
@@ -85,6 +85,7 @@ router.route("/addNotificationBranch").post((req, res) => {
 router.route("/update/:id").put((req, res) => {
 	Student.findById(req.params.id)
 		.then((student) => {
+			student.name=req.body.name;
 			student.email = req.body.email;
 			student.branch = req.body.branch;
 			student.year = Number(req.body.year);
@@ -97,7 +98,7 @@ router.route("/update/:id").put((req, res) => {
 });
 
 router.route("/delete/:id").delete((req, res) => {
-	Student.deleteOne({ _id: id })
+	Student.deleteOne({ _id: req.params.id })
 		.then(() => res.json({ success: "Student removed successfully" }))
 		.catch((err) => res.json({ failure: "Unable to remove student", error: err }));
 });
