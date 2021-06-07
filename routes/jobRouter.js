@@ -45,7 +45,7 @@ router.route("/add").post((req, res) => {
 		},
 		deadline: req.body.deadline,
 		branch: req.body.branch,
-		year: Number(req.body.year),
+		year: req.body.year,
 		timeline: [],
 		status: true,
 		reminderSent: false,
@@ -84,7 +84,7 @@ router.route("/update/:id").put((req, res) => {
 			};
 			job.deadline = req.body.deadline;
 			job.branch = req.body.branch;
-			job.year = Number(req.body.year);
+			job.year = req.body.year;
 			job.timeline = [];
 			job.status = Boolean(Number(req.body.status));
 
