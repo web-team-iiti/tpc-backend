@@ -35,7 +35,7 @@ const jobSchema = new Schema(
 		},
 		deadline: { type: String, required: true },
 		branch: { type: [String], required: true, default: [] },
-		year: { type: Number, required: true },
+		year: { type: [String], required: true, default: [] },
 		timeline: {
 			type: [
 				{
@@ -46,7 +46,7 @@ const jobSchema = new Schema(
 			default: [],
 			required: true,
 		},
-		status: { type: Boolean, default: true, required: true }, // status ? "recruiting" : "not recruiting"
+		status: { type: String, default: "upcoming", required: true }, // status: upcoming || active || closed
 		reminderSent: { type: Boolean, default: false, required: true }, // reminderSent ? "reminder mail has been sent" : "not sent"
 	},
 	{
