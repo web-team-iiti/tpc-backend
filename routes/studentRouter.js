@@ -4,7 +4,7 @@ const Student = require("../models/student.model");
 const authService = require("../services/authService_student");
 const passport = require("passport");
 const { notificationArrayEmail, notificationMail } = require("../services/mail");
-const { ensureAdmin } = require("../services/checkers");
+const { ensureAdmin, ensureAuthenticated } = require("../services/checkers");
 
 router.post(
 	"/login",
@@ -17,6 +17,17 @@ router.post(
 		console.log("login called", req.user);
 		authService.loginuser(req, res);
 	}
+);
+
+router.route("/mynotifications").get(ensureAuthenticated ,(req, res) => {
+	Student.findById(req.user._id)
+		.then((student) => {
+			const notifications = student.notifications;
+			console.log(notifications);
+			res.json({ success: "Notifications fetched successfully", notifications: notifications });
+		})
+		.catch((err) => res.json({ failure: "Unable to fetch students", error: err }));
+}
 );
 
 router.use(ensureAdmin);
@@ -76,7 +87,7 @@ router.route("/addNotificationBranch").post((req, res) => {
 	)
 		.then(() => {
 			// console.log(students);
-			notificationMail(req.body.branch, req.body.year,req.body.subject, req.body.text);
+			notificationMail(req.body.branch, req.body.year, req.body.subject, req.body.text);
 			res.json("Hi");
 		})
 		.catch((err) => res.json({ failure: "Unable to find student", error: err }));
@@ -85,7 +96,7 @@ router.route("/addNotificationBranch").post((req, res) => {
 router.route("/update/:id").put((req, res) => {
 	Student.findById(req.params.id)
 		.then((student) => {
-			student.name=req.body.name;
+			student.name = req.body.name;
 			student.email = req.body.email;
 			student.branch = req.body.branch;
 			student.year = Number(req.body.year);
