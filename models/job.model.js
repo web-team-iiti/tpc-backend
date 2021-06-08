@@ -46,7 +46,7 @@ const jobSchema = new Schema(
 			default: [],
 			required: true,
 		},
-		status: { type: String, default: "upcoming", required: true }, // status: upcoming || active || closed
+		status: { type: String, default: "upcoming", required: true }, // status: upcoming || open || closed
 		reminderSent: { type: Boolean, default: false, required: true }, // reminderSent ? "reminder mail has been sent" : "not sent"
 	},
 	{

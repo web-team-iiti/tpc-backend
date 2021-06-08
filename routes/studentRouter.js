@@ -99,7 +99,7 @@ router.route("/update/:id").put((req, res) => {
 			student.name = req.body.name;
 			student.email = req.body.email;
 			student.branch = req.body.branch;
-			student.year = Number(req.body.year);
+			student.year = req.body.year;
 			student
 				.save()
 				.then(() => res.json({ success: "Student updated successfully" }))

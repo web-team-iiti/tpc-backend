@@ -6,7 +6,7 @@ const studentSchema = new Schema(
 		email: { type: String, required: true },
 		branch: { type: String, required: true },
 		year: { type: Number, required: true, default: 1 },
-		notifications: { type: [{ text: { type: String, default: "", required: true }, date:{type: Date, default: Date.now } }], required: true, default: [] },
+		notifications: { type: [{ text: { type: String, default: "" }, date:{type: Date, default: Date.now } }], required: true, default: [] },
 	},
 	{
 		timestamps: true,

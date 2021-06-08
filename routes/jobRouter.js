@@ -47,7 +47,7 @@ router.route("/add").post((req, res) => {
 		branch: req.body.branch,
 		year: req.body.year,
 		timeline: [],
-		status: true,
+		status: req.body.status,
 		reminderSent: false,
 	};
 	console.log(req.body.deadline);
@@ -86,8 +86,8 @@ router.route("/update/:id").put((req, res) => {
 			job.branch = req.body.branch;
 			job.year = req.body.year;
 			job.timeline = [];
-			job.status = Boolean(Number(req.body.status));
-
+			job.status = req.body.status;
+// console.log("status", req.body.status);
 			job.save()
 				.then(() => res.json({ success: "Job updated successfully" }))
 				.catch((err) => res.json({ failure: "Unable to update job", error: err }));
