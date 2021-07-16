@@ -64,6 +64,9 @@ router.route("/add").post((req, res) => {
 });
 
 router.route("/update/:id").put((req, res) => {
+	console.log("updating");
+	// console.log(req.body.status);
+
 	Job.findById(req.params.id)
 		.then((job) => {
 			job.companyName = req.body.companyName;
@@ -87,7 +90,7 @@ router.route("/update/:id").put((req, res) => {
 			job.year = req.body.year;
 			job.timeline = [];
 			job.status = req.body.status;
-// console.log("status", req.body.status);
+			// console.log("status", req.body.status);
 			job.save()
 				.then(() => res.json({ success: "Job updated successfully" }))
 				.catch((err) => res.json({ failure: "Unable to update job", error: err }));
