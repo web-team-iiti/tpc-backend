@@ -71,9 +71,9 @@ router.route("/deleteAll").delete((req, res) => {
 
 router.route("/addNotificationArray").post((req, res) => {
 	console.log(req.body);
-	Student.updateMany({ email: req.body.emails }, { $push: { notifications: { text: req.body.text } } })
+	Student.updateMany({ email: req.body.emails }, { $push: { notifications: { text: req.body.text, subject: req.body.subject, companyName: req.body.companyName } } })
 		.then(() => {
-			notificationArrayEmail(req.body.emails, req.body.subject, req.body.text);
+			notificationArrayEmail(req.body.emails, req.body.subject, req.body.text, req.body.companyName);
 			res.json("Hi");
 		})
 		.catch((err) => res.json({ failure: "Unable to find student", error: err }));
@@ -83,11 +83,11 @@ router.route("/addNotificationBranch").post((req, res) => {
 	console.log(req.body);
 	Student.updateMany(
 		{ branch: req.body.branch, year: req.body.year },
-		{ $push: { notifications: { text: req.body.text } } }
+		{ $push: { notifications: { text: req.body.text, subject: req.body.subject, companyName: req.body.companyName } } }
 	)
 		.then(() => {
 			// console.log(students);
-			notificationMail(req.body.branch, req.body.year, req.body.subject, req.body.text);
+			notificationMail(req.body.branch, req.body.year, req.body.subject, req.body.text, req.body.companyName);
 			res.json("Hi");
 		})
 		.catch((err) => res.json({ failure: "Unable to find student", error: err }));
